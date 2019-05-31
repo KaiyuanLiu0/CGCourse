@@ -16,5 +16,5 @@ This is the final project for CGCourse 2019 in ZJU
 ```
 mkdir build
 cmake ../.
-make -j8
+make
 ```
