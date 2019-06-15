@@ -1,0 +1,3 @@
+/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir
