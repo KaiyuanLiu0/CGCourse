@@ -18,7 +18,8 @@ enum Camera_Movement {
     LEFT,
     RIGHT,
     UP,
-    DOWN
+    DOWN,
+    ORBIT
 };
 
 // default values
@@ -69,21 +70,29 @@ public:
     }
 
     // keyboard operations, move
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime)
+    void ProcessKeyboard(Camera_Movement operation, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
-        if (direction == FORWARD)
+        float angularVelocity = MovementSpeed / sqrt(Position.x * Position.x + Position.z * Position.z) * deltaTime;
+        if (operation == FORWARD)
             Position += Front * velocity;
-        if (direction == BACKWARD)
+        if (operation == BACKWARD)
             Position -= Front * velocity;
-        if (direction == LEFT)
+        if (operation == LEFT)
             Position -= Right * velocity;
-        if (direction == RIGHT)
+        if (operation == RIGHT)
             Position += Right * velocity;
-        if (direction == UP)
+        if (operation == UP)
             Position += Up * velocity;
-        if (direction == DOWN)
+        if (operation == DOWN)
             Position -= Up * velocity;
+        if (operation == ORBIT)
+        {
+            float oldX = Position.x;
+            float oldZ = Position.z;
+            Position.x = oldX * cos(angularVelocity) + oldZ * sin(angularVelocity);
+            Position.z = -oldX * sin(angularVelocity) + oldZ * cos(angularVelocity);
+        }
     }
 
     // mouse operations, view direction
