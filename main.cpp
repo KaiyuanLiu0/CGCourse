@@ -13,6 +13,7 @@
 #include "class/map.h"
 #include "class/skybox.h"
 #include "class/box.h"
+#include "class/plane.h"
 #include <iostream>
 #include <vector>
 
@@ -25,6 +26,7 @@ void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
 void DrawBox(Shader& blockShader);
 void DrawLight(Shader&, Light&);
 void DrawSkybox(Shader&, SkyBox&);
+void DrawPlane(Shader&, Plane&);
 unsigned int LoadTexture(char const* path);
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -83,32 +85,7 @@ int main()
     // enable depth test
     glEnable(GL_DEPTH_TEST);
 
-    float planeVertices[] = {
-            // positions            // normals         // texcoords
-            25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-            -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
 
-            25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-            25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
-    };
-    // plane VAO
-    unsigned int planeVAO;
-    unsigned int planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glBindVertexArray(0);
-    unsigned int dirtTexture = LoadTexture("../resources/block/dirt.png");
 
     Shader blockShader("../shaders/block_shader.vs", "../shaders/block_shader.fs");
     Shader lightShader("../shaders/light_shader.vs", "../shaders/light_shader.fs");
@@ -119,9 +96,8 @@ int main()
     Block end(END);
     Light light;
     SkyBox skybox;
+    Plane plane;
 
-    Box b(20, 10, 0);
-    boxList.push_back(b);
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -138,20 +114,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         DrawLight(lightShader, light);
         DrawMap(blockShader, wall, base, end);
-        DrawBox(blockShader);
+        //DrawBox(blockShader);
         DrawSkybox(skyboxShader, skybox);
-        planeShader.use();
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        planeShader.setMat4("model", model);
-        planeShader.setMat4("view", view);
-        planeShader.setMat4("projection", projection);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, dirtTexture);
-        glBindVertexArray(planeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
+        DrawPlane(planeShader, plane);
         // frame buffer swap
         glfwSwapBuffers(window);
 
@@ -316,39 +281,14 @@ void DrawBox(Shader& blockShader)
     }
 }
 
-unsigned int LoadTexture(char const * path)
+void DrawPlane(Shader& planeShader, Plane& plane)
 {
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, nrComponents;
-    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
+    planeShader.use();
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    planeShader.setMat4("model", model);
+    planeShader.setMat4("view", view);
+    planeShader.setMat4("projection", projection);
+    plane.Draw(planeShader);
 }
