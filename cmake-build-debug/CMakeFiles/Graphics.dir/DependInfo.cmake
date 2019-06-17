@@ -17,6 +17,8 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/kaiyuan/Code/C++/Graphics/CGCourse/aux/stb_image.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/aux/stb_image.cpp.o"
   "/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/block.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/class/block.cpp.o"
+  "/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/box.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/class/box.cpp.o"
+  "/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/light.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/class/light.cpp.o"
   "/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/map.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/class/map.cpp.o"
   "/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/skybox.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/class/skybox.cpp.o"
   "/Users/kaiyuan/Code/C++/Graphics/CGCourse/main.cpp" "/Users/kaiyuan/Code/C++/Graphics/CGCourse/cmake-build-debug/CMakeFiles/Graphics.dir/main.cpp.o"

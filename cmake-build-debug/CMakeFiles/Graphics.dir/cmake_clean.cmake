@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Graphics.dir/class/block.cpp.o"
   "CMakeFiles/Graphics.dir/class/map.cpp.o"
   "CMakeFiles/Graphics.dir/class/skybox.cpp.o"
+  "CMakeFiles/Graphics.dir/class/box.cpp.o"
+  "CMakeFiles/Graphics.dir/class/light.cpp.o"
   "Graphics.pdb"
   "Graphics"
 )

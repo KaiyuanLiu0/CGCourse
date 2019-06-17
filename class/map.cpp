@@ -5,20 +5,20 @@
 #include "map.h"
 Map::Map()
 {
-    this->level = LEVEL1;
+    this->m_level_ = LEVEL1;
 }
 
 Map::Map(LEVEL level)
 {
-    this->level = level;
+    this->m_level_ = level;
 }
 
 void Map::SetLevel(LEVEL level)
 {
-    this->level = level;
+    this->m_level_ = level;
 }
 
 TYPE Map::GetType(int row, int col)
 {
-    return map[level][row][col];
+    return map[m_level_][row][col];
 }

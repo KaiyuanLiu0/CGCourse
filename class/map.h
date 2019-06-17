@@ -21,36 +21,60 @@ public:
     TYPE GetType(int row, int col);
 private:
     const TYPE map[NUMOFLEVEL][MAP_HEIGHT][MAP_WIDTH] = {
-            {{PLAIN, PLAIN, WALL,   WALL,  WALL,  WALL,  WALL,  PLAIN}, // LEVEL 1 MAP
-             {WALL,  WALL,  WALL,   PLAIN, PLAIN, PLAIN, WALL,  PLAIN},
-             {WALL,  END,   PLAIN,  PLAIN, PLAIN, PLAIN, WALL,  PLAIN},
-             {WALL,  WALL,  WALL,   PLAIN, PLAIN, END,   WALL,  PLAIN},
-             {WALL,  END,   WALL,   WALL,  PLAIN, PLAIN, WALL,  PLAIN},
-             {WALL,  PLAIN, WALL,   END,   PLAIN, PLAIN, WALL,  WALL },
-             {WALL,  PLAIN, END,    PLAIN, PLAIN, PLAIN, END,   WALL },
-             {WALL,  PLAIN, PLAIN,  PLAIN, END,   PLAIN, PLAIN, WALL },
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL }},
+            {{PLAIN, PLAIN, WALL,    WALL,  WALL,  WALL,  WALL,  PLAIN}, // LEVEL 1 MAP
+             {WALL,  WALL,  WALL,    PLAIN, PLAIN, PLAIN, WALL,  PLAIN},
+             {WALL,  END,   PLAIN,   PLAIN, PLAIN, PLAIN, WALL,  PLAIN},
+             {WALL,  WALL,  WALL,    PLAIN, PLAIN, END,   WALL,  PLAIN},
+             {WALL,  END,   WALL,    WALL,  PLAIN, PLAIN, WALL,  PLAIN},
+             {WALL,  PLAIN, WALL,    END,   PLAIN, PLAIN, WALL,  WALL },
+             {WALL,  PLAIN, END,     PLAIN, PLAIN, PLAIN, END,   WALL },
+             {WALL,  PLAIN, PLAIN,   PLAIN, END,   PLAIN, PLAIN, WALL },
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL }},
 
-            {{WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL}, // LEVEL 2 MAP NOT FILLED
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL}}
+            {{WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL}, // LEVEL 2 MAP NOT FILLED
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,  WALL,    WALL,  WALL,  WALL,  WALL,  WALL }}
     };
     const TYPE base[MAP_HEIGHT][MAP_WIDTH] = {
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL}, // LEVEL 2 MAP NOT FILLED
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
-             {WALL,  WALL,  WALL,   WALL,  WALL,  WALL,  WALL,  WALL}
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL}, // LEVEL 2 MAP NOT FILLED
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL},
+             {WALL,  WALL,   WALL,   WALL,  WALL,  WALL,  WALL,  WALL }
     };
-    int level;
+    const TYPE boxmap[NUMOFLEVEL][MAP_HEIGHT][MAP_WIDTH] = {
+            {{PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN}, // LEVEL 1 BOX MAP
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  BOX,   PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, BOX,   PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, BOX,   PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, BOX,    PLAIN,  BOX,   BOX,   BOX,   PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN}},
+
+            {{PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN},
+             {PLAIN, PLAIN,  PLAIN,  PLAIN, PLAIN, PLAIN, PLAIN, PLAIN}}
+
+    };
+    int m_level_;
 };
 
 
