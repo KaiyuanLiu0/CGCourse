@@ -177,6 +177,60 @@ class/block.cpp.s:
 	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/block.cpp.s
 .PHONY : class/block.cpp.s
 
+class/box.o: class/box.cpp.o
+
+.PHONY : class/box.o
+
+# target to build an object file
+class/box.cpp.o:
+	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/box.cpp.o
+.PHONY : class/box.cpp.o
+
+class/box.i: class/box.cpp.i
+
+.PHONY : class/box.i
+
+# target to preprocess a source file
+class/box.cpp.i:
+	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/box.cpp.i
+.PHONY : class/box.cpp.i
+
+class/box.s: class/box.cpp.s
+
+.PHONY : class/box.s
+
+# target to generate assembly for a file
+class/box.cpp.s:
+	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/box.cpp.s
+.PHONY : class/box.cpp.s
+
+class/light.o: class/light.cpp.o
+
+.PHONY : class/light.o
+
+# target to build an object file
+class/light.cpp.o:
+	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/light.cpp.o
+.PHONY : class/light.cpp.o
+
+class/light.i: class/light.cpp.i
+
+.PHONY : class/light.i
+
+# target to preprocess a source file
+class/light.cpp.i:
+	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/light.cpp.i
+.PHONY : class/light.cpp.i
+
+class/light.s: class/light.cpp.s
+
+.PHONY : class/light.s
+
+# target to generate assembly for a file
+class/light.cpp.s:
+	$(MAKE) -f CMakeFiles/Graphics.dir/build.make CMakeFiles/Graphics.dir/class/light.cpp.s
+.PHONY : class/light.cpp.s
+
 class/map.o: class/map.cpp.o
 
 .PHONY : class/map.o
@@ -300,6 +354,12 @@ help:
 	@echo "... class/block.o"
 	@echo "... class/block.i"
 	@echo "... class/block.s"
+	@echo "... class/box.o"
+	@echo "... class/box.i"
+	@echo "... class/box.s"
+	@echo "... class/light.o"
+	@echo "... class/light.i"
+	@echo "... class/light.s"
 	@echo "... class/map.o"
 	@echo "... class/map.i"
 	@echo "... class/map.s"

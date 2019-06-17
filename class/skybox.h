@@ -63,12 +63,12 @@ public:
     unsigned int TextureID;
     unsigned int VAO, VBO;
     const char* faces[6] = {
-            "../resources/skybox/right.tga",
-            "../resources/skybox/left.tga",
-            "../resources/skybox/up.tga",
-            "../resources/skybox/down.tga",
-            "../resources/skybox/back.tga",
-            "../resources/skybox/front.tga"
+            "../resources/skybox/right.jpg",
+            "../resources/skybox/left.jpg",
+            "../resources/skybox/up.jpg",
+            "../resources/skybox/down.jpg",
+            "../resources/skybox/back.jpg",
+            "../resources/skybox/front.jpg"
     };
 };
 

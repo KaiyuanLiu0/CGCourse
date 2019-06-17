@@ -11,6 +11,7 @@
 #include "class/block.h"
 #include "class/map.h"
 #include "class/skybox.h"
+#include "class/box.h"
 #include <iostream>
 #include <vector>
 
@@ -19,9 +20,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-void DrawMap(Shader blockShader, Block wall, Block box, Block base);
-void DrawLight(Shader);
-void DrawSkybox(Shader, SkyBox);
+void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
+void DrawBox(Shader& blockShader);
+void DrawLight(Shader&);
+void DrawSkybox(Shader&, SkyBox&);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -41,8 +43,8 @@ glm::vec3 lightPos(0.0f, 5.0f, 0.0f);
 
 // map
 Map gameMap(LEVEL1);
-
 // block
+vector<Box> boxList;
 int main()
 {
     glfwInit();
@@ -78,13 +80,44 @@ int main()
 
     // enable depth test
     glEnable(GL_DEPTH_TEST);
+
+    float planeVertices[] = {
+            // positions            // normals         // texcoords
+            25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+            -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+
+            25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+            25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
+    };
+    // plane VAO
+    unsigned int planeVAO;
+    unsigned int planeVBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glBindVertexArray(0);
+
     Shader blockShader("../shaders/block_shader.vs", "../shaders/block_shader.fs");
     Shader lightShader("../shaders/light_shader.vs", "../shaders/light_shader.fs");
     Shader skyboxShader("../shaders/skybox.vs", "../shaders/skybox.fs");
+    Shader planeShader("../shaders/plane.vs", "../shaders/plane.fs");
     Block wall(WALL);
-    Block box(BOX);
     Block base(BASE);
+    Block end(END);
     SkyBox skybox;
+
+    Box b(20, 10, 0);
+    boxList.push_back(b);
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -99,12 +132,22 @@ int main()
         // render
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        lightPos.x = 10 * sin(glfwGetTime());
-        lightPos.z = 10 * cos(glfwGetTime());
-        DrawLight(lightShader);
-        DrawMap(blockShader, wall, box, base);
+        lightPos.x = 10 * sin(glfwGetTime()) - MAP_WIDTH / 2;
+        lightPos.z = 10 * cos(glfwGetTime()) - MAP_HEIGHT / 2;
+        //DrawLight(lightShader);
+        DrawMap(blockShader, wall, base, end);
+        DrawBox(blockShader);
         DrawSkybox(skyboxShader, skybox);
-
+        planeShader.use();
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        planeShader.setMat4("model", model);
+        planeShader.setMat4("view", view);
+        planeShader.setMat4("projection", projection);
+        glBindVertexArray(planeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
         // frame buffer swap
         glfwSwapBuffers(window);
 
@@ -170,52 +213,52 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(yoffset);
 }
 
-void DrawMap(Shader blockShader, Block wall, Block box, Block base)
+void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
 {
     glm::mat4 model      = glm::mat4(1.0f);
     glm::mat4 view       = camera.GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    glm::mat3 normalModel= glm::mat3(1.0f);
     blockShader.use();
     blockShader.setMat4("view", view);
     blockShader.setMat4("projection", projection);
-    blockShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
-    blockShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-    blockShader.setVec3("light.specular", 0.5f, 0.5f, 0.5f);
+    blockShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    blockShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    blockShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
     blockShader.setVec3("light.position", lightPos);
     blockShader.setVec3("viewPos", camera.Position);
-    blockShader.setFloat("shininess", 64.0f);
+    blockShader.setFloat("shininess", 32.0f);
     for (int i = 0; i != MAP_HEIGHT; ++i)
     {
         for (int j = 0; j != MAP_WIDTH; ++j)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(i, 0, j));
-            normalModel = glm::mat3(transpose(inverse(model)));
             blockShader.setMat4("model", model);
-            blockShader.setMat3("normalMode", normalModel);
             TYPE type = gameMap.GetType(i, j);
             switch (type)
             {
                 case WALL:
                     wall.Draw(blockShader);
                     break;
-                case BOX:
-                    box.Draw(blockShader);
-                    break;
                 default:
                     break;
             }
-            model = glm::translate(model, glm::vec3(0, -1, 0));
-            normalModel = glm::mat3(transpose(inverse(model)));
-            blockShader.setMat4("model", model);
-            blockShader.setMat3("normalMode", normalModel);
-            base.Draw(blockShader);
+//            model = glm::translate(model, glm::vec3(0, -1, 0));
+//            blockShader.setMat4("model", model);
+//            switch (type)
+//            {
+//                case END:
+//                    end.Draw(blockShader);
+//                    break;
+//                default:
+//                    base.Draw(blockShader);
+//                    break;
+//            }
         }
     }
 }
 
-void DrawLight(Shader lightShader)
+void DrawLight(Shader& lightShader)
 {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
@@ -243,7 +286,7 @@ void DrawLight(Shader lightShader)
     glBindVertexArray(0);
 }
 
-void DrawSkybox(Shader skyboxShader, SkyBox skybox)
+void DrawSkybox(Shader& skyboxShader, SkyBox& skybox)
 {
     glDepthFunc(GL_LEQUAL);
     skyboxShader.use();
@@ -257,4 +300,26 @@ void DrawSkybox(Shader skyboxShader, SkyBox skybox)
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
+}
+
+void DrawBox(Shader& blockShader)
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
+    blockShader.use();
+    blockShader.setMat4("view", view);
+    blockShader.setMat4("projection", projection);
+    blockShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    blockShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    blockShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    blockShader.setVec3("light.position", lightPos);
+    blockShader.setVec3("viewPos", camera.Position);
+    blockShader.setFloat("shininess", 32.0f);
+    for (auto box : boxList)
+    {
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(box.x, box.y, box.z));
+        box.Draw(blockShader);
+    }
 }

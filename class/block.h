@@ -64,7 +64,8 @@ const std::string path[NUMOFTYPE][6] = {
         {"../resources/block/wood0.bmp",  "../resources/block/wood0.bmp",  "../resources/block/wood1.bmp", // BOX
                 "../resources/block/wood0.bmp",  "../resources/block/wood0.bmp",  "../resources/block/wood0.bmp"},
         {}, // PLAYER
-        {}, // END
+        {"../resources/block/earth.bmp", "../resources/block/earth.bmp", "../resources/block/wood0.bmp",
+                "../resources/block/earth.bmp", "../resources/block/earth.bmp", "../resources/block/earth.bmp"}, // END
         {"../resources/block/earth.bmp", "../resources/block/earth.bmp", "../resources/block/earth.bmp", // BASE
          "../resources/block/earth.bmp", "../resources/block/earth.bmp", "../resources/block/earth.bmp"}
 };

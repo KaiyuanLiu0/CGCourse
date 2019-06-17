@@ -96,6 +96,18 @@
 		<Unit filename="/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/block.h">
 			<Option target="Graphics"/>
 		</Unit>
+		<Unit filename="/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/box.cpp">
+			<Option target="Graphics"/>
+		</Unit>
+		<Unit filename="/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/box.h">
+			<Option target="Graphics"/>
+		</Unit>
+		<Unit filename="/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/light.cpp">
+			<Option target="Graphics"/>
+		</Unit>
+		<Unit filename="/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/light.h">
+			<Option target="Graphics"/>
+		</Unit>
 		<Unit filename="/Users/kaiyuan/Code/C++/Graphics/CGCourse/class/map.cpp">
 			<Option target="Graphics"/>
 		</Unit>
