@@ -9,6 +9,7 @@
 #include "aux/model.h"
 #include "class/type.h"
 #include "class/block.h"
+#include "class/light.h"
 #include "class/map.h"
 #include "class/skybox.h"
 #include "class/box.h"
@@ -22,7 +23,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
 void DrawBox(Shader& blockShader);
-void DrawLight(Shader&);
+void DrawLight(Shader&, Light&);
 void DrawSkybox(Shader&, SkyBox&);
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -114,6 +115,7 @@ int main()
     Block wall(WALL);
     Block base(BASE);
     Block end(END);
+    Light light;
     SkyBox skybox;
 
     Box b(20, 10, 0);
@@ -132,9 +134,7 @@ int main()
         // render
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        lightPos.x = 10 * sin(glfwGetTime()) - MAP_WIDTH / 2;
-        lightPos.z = 10 * cos(glfwGetTime()) - MAP_HEIGHT / 2;
-        //DrawLight(lightShader);
+        DrawLight(lightShader, light);
         DrawMap(blockShader, wall, base, end);
         DrawBox(blockShader);
         DrawSkybox(skyboxShader, skybox);
@@ -258,8 +258,10 @@ void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
     }
 }
 
-void DrawLight(Shader& lightShader)
+void DrawLight(Shader& lightShader, Light& light)
 {
+    lightPos.x = 10 * sin(glfwGetTime()) - MAP_WIDTH / 2;
+    lightPos.z = 10 * cos(glfwGetTime()) - MAP_HEIGHT / 2;
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
     glm::mat4 view = camera.GetViewMatrix();
@@ -268,22 +270,8 @@ void DrawLight(Shader& lightShader)
     lightShader.setMat4("model", model);
     lightShader.setMat4("view", view);
     lightShader.setMat4("projection", projection);
+    light.Draw(lightShader);
 
-    // temporarily using a cube
-    unsigned int VAO, VBO;
-    glGenBuffers(1, &VBO);
-    glGenVertexArrays(1, &VAO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(block_vertices), block_vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
 }
 
 void DrawSkybox(Shader& skyboxShader, SkyBox& skybox)
