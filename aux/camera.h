@@ -73,7 +73,6 @@ public:
     void ProcessKeyboard(Camera_Movement operation, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
-        float angularVelocity = MovementSpeed / sqrt(Position.x * Position.x + Position.z * Position.z) * deltaTime;
         if (operation == FORWARD)
             Position += Front * velocity;
         if (operation == BACKWARD)
@@ -88,10 +87,14 @@ public:
             Position -= Up * velocity;
         if (operation == ORBIT)
         {
-            float oldX = Position.x;
-            float oldZ = Position.z;
-            Position.x = oldX * cos(angularVelocity) + oldZ * sin(angularVelocity);
-            Position.z = -oldX * sin(angularVelocity) + oldZ * cos(angularVelocity);
+            if (Position.x * Position.x + Position.z * Position.z > 0.1) // divide-by-zero error
+            {
+                float angularVelocity = MovementSpeed / sqrt(Position.x * Position.x + Position.z * Position.z) * deltaTime;
+                float oldX = Position.x;
+                float oldZ = Position.z;
+                Position.x = oldX * cos(angularVelocity) + oldZ * sin(angularVelocity);
+                Position.z = -oldX * sin(angularVelocity) + oldZ * cos(angularVelocity);
+            }
         }
     }
 
