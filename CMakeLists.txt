@@ -8,7 +8,7 @@ set(GLAD_H glad/include)
 set(INCLUDE include)
 include_directories(${INCLUDE} ${GLAD_H})
 
-aux_source_directory(./aux DIR_SRCS)
+aux_source_directory(./src DIR_SRCS)
 
 set(GLEW_LINK /usr/local/Cellar/glew/2.1.0/lib/libGLEW.2.1.dylib)
 set(GLFW_LINK /usr/local/Cellar/glfw/3.3/lib/libglfw.3.3.dylib)
