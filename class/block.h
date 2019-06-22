@@ -6,7 +6,7 @@
 #define GRAPHICS_BLOCK_H
 #include <string>
 #include <vector>
-#include "../aux/shader.h"
+#include "../src/shader.h"
 #include "type.h"
 
 const float block_vertices[] = {

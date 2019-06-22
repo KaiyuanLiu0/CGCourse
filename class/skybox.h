@@ -6,7 +6,7 @@
 #define GRAPHICS_SKYBOX_H
 
 #include <vector>
-#include "../aux/shader.h"
+#include "../src/shader.h"
 
 const float skyboxVertices[] = {
         // positions

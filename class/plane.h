@@ -4,8 +4,8 @@
 
 #ifndef GRAPHICS_PLANE_H
 #define GRAPHICS_PLANE_H
-#include "../aux/shader.h"
-#include "../aux/stb_image.h"
+#include "../src/shader.h"
+#include "../src/stb_image.h"
 const float planeVertices[] = {
         // positions            // normals         // texcoords
         500.0f, -0.5f,  500.0f,  0.0f, 1.0f, 0.0f,  500.0f,  0.0f,
