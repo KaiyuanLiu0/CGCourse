@@ -7,6 +7,7 @@
 #include "src/stb_image.h"
 #include "src/camera.h"
 #include "src/model.h"
+#include "src/screenshot.h"
 #include "class/type.h"
 #include "class/block.h"
 #include "class/light.h"
@@ -150,6 +151,9 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(DOWN, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         camera.ProcessKeyboard(ORBIT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS){
+        saveScreenshot(window, "a.png");
+    }
 }
 
 // viewport size callback

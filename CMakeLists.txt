@@ -31,6 +31,6 @@ target_link_libraries(Graphics "-framework OpenGL")
 target_link_libraries(Graphics "-framework GLUT")
 endif()
 if (WIN32)
-target_link_libraries(Graphics "glfw3")
+target_link_libraries(Graphics "glfw3dll")
 endif()
  
