@@ -4,7 +4,7 @@
 
 #ifndef GRAPHICS_LIGHT_H
 #define GRAPHICS_LIGHT_H
-#include "../aux/shader.h"
+#include "../src/shader.h"
 #include "block.h"
 class Light {
 public:
