@@ -17,6 +17,7 @@
 #include "class/plane.h"
 #include <iostream>
 #include <vector>
+#include <time.h>
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -152,7 +153,9 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         camera.ProcessKeyboard(ORBIT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS){
-        saveScreenshot(window, "a.png");
+        char *s = (char *)malloc(sizeof(char) * 100);
+        sprintf(s, "%d.png", time(0));
+        saveScreenshot(window, s);
     }
 }
 
