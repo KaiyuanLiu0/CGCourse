@@ -3,7 +3,7 @@
 //
 
 #include "skybox.h"
-#include "../aux/stb_image.h"
+#include "../src/stb_image.h"
 
 SkyBox::SkyBox()
 {
