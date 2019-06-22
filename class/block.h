@@ -59,8 +59,8 @@ const std::string path[NUMOFTYPE][6] = {
         // negative y                     // positive z                   // negative z
         {}, // EMPTY
         {}, // plain
-        {"../resources/block/grass0.png", "../resources/block/grass0.png", "../resources/block/grass1.jpg", //WALL
-                "../resources/block/earth.bmp",  "../resources/block/grass0.png", "../resources/block/grass0.png"},
+        {"../resources/block/brickwall.jpg", "../resources/block/brickwall.jpg", "../resources/block/brickwall.jpg", //WALL
+                "../resources/block/brickwall.jpg",  "../resources/block/brickwall.jpg", "../resources/block/brickwall.jpg"},
         {"../resources/block/wood0.bmp",  "../resources/block/wood0.bmp",  "../resources/block/wood1.bmp", // BOX
                 "../resources/block/wood0.bmp",  "../resources/block/wood0.bmp",  "../resources/block/wood0.bmp"},
         {}, // PLAYER

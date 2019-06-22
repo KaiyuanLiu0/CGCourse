@@ -5,7 +5,7 @@
 #include "plane.h"
 Plane::Plane()
 {
-    Texture = LoadTexture("../resources/block/dirt.png");
+    Texture = LoadTexture(path);
     unsigned int VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
