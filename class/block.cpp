@@ -2,7 +2,7 @@
 // Created by KaiyuanLiu on 2019-06-14.
 //
 
-#include "../aux/stb_image.h"
+#include "../src/stb_image.h"
 #include "block.h"
 
 Block::Block()
