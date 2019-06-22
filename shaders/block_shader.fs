@@ -40,7 +40,7 @@ float ShadowCalculation(vec3 fragPos)
 float Strength()
 {
     vec3 dis = FragPos- light.position;
-    return (5.0f / (length(dis) * length(dis)) > 1.0f) ? 1.0f : 5.0f / (length(dis) * length(dis));
+    return (10.0f / (length(dis) * length(dis)) > 1.0f) ? 1.0f : 10.0f / (length(dis) * length(dis));
 }
 
 void main()

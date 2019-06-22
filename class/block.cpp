@@ -63,7 +63,7 @@ unsigned int Block::LoadTexture(TYPE type)
     {
         image = stbi_load(path[type][i].c_str(), &width, &height, &channel, 0);
         if (!image) {
-            throw "BLOCK::LOADTEXTURE::TEXTURE_FILE_MISSING";
+            std::cout << "BLOCK::Texture failed to load at path: " << path[type][i] << std::endl;
         }
 
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
