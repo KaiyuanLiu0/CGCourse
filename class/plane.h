@@ -8,13 +8,13 @@
 #include "../aux/stb_image.h"
 const float planeVertices[] = {
         // positions            // normals         // texcoords
-        25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-        -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+        500.0f, -0.5f,  500.0f,  0.0f, 1.0f, 0.0f,  500.0f,  0.0f,
+        -500.0f, -0.5f,  500.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+        -500.0f, -0.5f, -500.0f,  0.0f, 1.0f, 0.0f,   0.0f, 500.0f,
 
-        25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-        25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
+        500.0f, -0.5f,  500.0f,  0.0f, 1.0f, 0.0f,  500.0f,  0.0f,
+        -500.0f, -0.5f, -500.0f,  0.0f, 1.0f, 0.0f,   0.0f, 500.0f,
+        500.0f, -0.5f, -500.0f,  0.0f, 1.0f, 0.0f,  500.0f, 500.0f
 };
 
 class Plane {
@@ -22,6 +22,7 @@ public:
     Plane();
     void Draw(Shader& shader);
 private:
+    const char* path = "../resources/block/wood.png";
     unsigned int VAO;
     unsigned int Texture;
     unsigned int LoadTexture(char const* path);

@@ -5,7 +5,7 @@
 #ifndef GRAPHICS_TYPE_H
 #define GRAPHICS_TYPE_H
 enum TYPE {
-    EPMTY,
+    EMPTY,
     PLAIN,
     WALL,
     BOX,  // box pushed
