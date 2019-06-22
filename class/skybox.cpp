@@ -33,6 +33,8 @@ void SkyBox::LoadTexture()
     for (GLuint i = 0; i != 6; ++i)
     {
         image = stbi_load(faces[i], &width, &height, &channel, 0);
+        if (!image)
+            std::cout << "SKYBOX::Texture failed to load at path: " << faces[i] << std::endl;
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
         stbi_image_free(image);
     }
