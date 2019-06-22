@@ -3,10 +3,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "aux/shader.h"
-#include "aux/stb_image.h"
-#include "aux/camera.h"
-#include "aux/model.h"
+#include "src/shader.h"
+#include "src/stb_image.h"
+#include "src/camera.h"
+#include "src/model.h"
 #include "class/type.h"
 #include "class/block.h"
 #include "class/light.h"
