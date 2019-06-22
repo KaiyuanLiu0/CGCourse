@@ -23,6 +23,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+void GenerateShadowMap(Shader& shadowShader);
+void GenerateDepthMap(Shader& shadowShder);
 void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
 void DrawBox(Shader& blockShader);
 void DrawLight(Shader& lightShader, Light& light);
@@ -34,6 +36,11 @@ unsigned int LoadTexture(char const* path);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+const unsigned int SHADOW_WIDTH = 1024;
+const unsigned int SHADOW_HEIGHT = 1024;
+
+unsigned int depthMapFBO;
+unsigned int depthCubemap;
 
 // camera
 Camera camera(glm::vec3(3.0f, 3.0f, 3.0f));
@@ -97,6 +104,10 @@ int main()
     Shader skyboxShader("../shaders/skybox.vs", "../shaders/skybox.fs");
     Shader planeShader("../shaders/plane.vs", "../shaders/plane.fs");
     Shader modelShader("../shaders/model.vs", "../shaders/model.fs");
+    Shader shadowShader("../shaders/shadow_depth.vs", "../shaders/shadow_depth.fs", "../shaders/shadow_depth.gs");
+
+    GenerateShadowMap(shadowShader);
+
     Block wall(WALL);
     Block base(BASE);
     Block end(END);
@@ -113,21 +124,60 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        glDepthFunc(GL_LESS);
 
         // input
         processInput(window);
 
         // render
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        DrawLight(lightShader, light);
+
+        // create depth cubemap
+        float near_plane = 1.0f;
+        float far_plane  = 25.0f;
+        glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
+        std::vector<glm::mat4> shadowTransforms;
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f)));
+
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        shadowShader.use();
+        for (unsigned int i = 0; i < 6; ++i)
+            shadowShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+        shadowShader.setFloat("far_plane", far_plane);
+        shadowShader.setVec3("lightPos", lightPos);
+        DrawMap(shadowShader, wall, base, end);
+        DrawPlane(shadowShader, plane);
+        DrawBuilding(shadowShader, wall);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // render scene
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        blockShader.use();
+        blockShader.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE1);
+        blockShader.setInt("depthMap", 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
         DrawMap(blockShader, wall, base, end);
+        DrawLight(lightShader, light);
         DrawBuilding(blockShader, wall);
         //DrawBox(blockShader);
         DrawSkybox(skyboxShader, skybox);
-        DrawPlane(planeShader, plane);
         DrawModel(modelShader, moon, rock);
+
+        planeShader.use();
+        planeShader.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE1);
+        planeShader.setInt("depthMap", 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+        DrawPlane(planeShader, plane);
 
         // frame buffer swap
         glfwSwapBuffers(window);
@@ -199,6 +249,32 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(yoffset);
 }
 
+void GenerateShadowMap(Shader& shaderShader)
+{
+    glGenFramebuffers(1, &depthMapFBO);
+    // create depth cubemap texture
+    glGenTextures(1, &depthCubemap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+    for (unsigned int i = 0; i < 6; ++i)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // attach depth texture as FBO's depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}
+
+void GenerateDepthMap(Shader& shadowShder)
+{
+
+}
 void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
 {
     glm::mat4 model      = glm::mat4(1.0f);
