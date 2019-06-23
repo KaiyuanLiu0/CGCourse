@@ -6,6 +6,7 @@
 #include <random>
 #include "maze.h"
 unsigned int Maze[MAZE_LIMIT][MAZE_LIMIT];
+
 /* randomly generate a position in the maze */
 static struct Position RandomPosition(int level)
 {
@@ -27,12 +28,11 @@ static void ShuffleList(std::vector<int> &iVec)
 }
 
 /* start from the lobby, by backtracking and dfs to generate the maze */
-static void dfs(int level, struct Position currentPosition)
+static void dfs(int level, struct Position currentPosition, std::vector<bool>& visited)
 {
     std::vector<int> list = { GOEAST, GOSOUTH, GOWEST, GONORTH };
-    std::vector<int>& listR = list;
-    static std::vector<bool> visited(level * level, false);
-    ShuffleList(listR);
+    
+    ShuffleList(list);
     if (visited[currentPosition.row * level + currentPosition.col] == false) // not visited
     {
         visited[currentPosition.row *level + currentPosition.col] = true;
@@ -48,7 +48,7 @@ static void dfs(int level, struct Position currentPosition)
                     {
                         Maze[currentPosition.row][currentPosition.col] |= EAST; // remove the wall between the two cell
                         Maze[tempPos.row][tempPos.col] |= WEST;
-                        dfs(level, tempPos);
+                        dfs(level, tempPos, visited);
                     }
                     break;
                 case GOSOUTH:
@@ -58,7 +58,7 @@ static void dfs(int level, struct Position currentPosition)
                     {
                         Maze[currentPosition.row][currentPosition.col] |= SOUTH;
                         Maze[tempPos.row][tempPos.col] |= NORTH;
-                        dfs(level, tempPos);
+                        dfs(level, tempPos, visited);
                     }
                     break;
                 case GOWEST:
@@ -68,7 +68,7 @@ static void dfs(int level, struct Position currentPosition)
                     {
                         Maze[currentPosition.row][currentPosition.col] |= WEST;
                         Maze[tempPos.row][tempPos.col] |= EAST;
-                        dfs(level, tempPos);
+                        dfs(level, tempPos, visited);
                     }
                     break;
                 case GONORTH:
@@ -78,7 +78,7 @@ static void dfs(int level, struct Position currentPosition)
                     {
                         Maze[currentPosition.row][currentPosition.col] |= NORTH;
                         Maze[tempPos.row][tempPos.col] |= SOUTH;
-                        dfs(level, tempPos);
+                        dfs(level, tempPos, visited);
                     }
                     break;
             }
@@ -91,7 +91,9 @@ extern void InitMaze(int level)
 {
     for (int i = 0; i < level; ++i)
         for (int j = 0; j < level; ++j)
+        {
             Maze[i][j] = NOWAY;
+        }
 }
 
 void PrintMaze(int level)
@@ -111,9 +113,9 @@ void PrintMaze(int level)
             else std::cout << " ";
             // if (Maze[i][j] & MONSTER) std::cout << " M ";
             // else if (Maze[i][j] & PRINCESS) std::cout << " P ";
-            // else if (Maze[i][j] & LOBBY) std::cout << " L ";
+            if (Maze[i][j] & LOBBY) std::cout << " L ";
             // else if (Maze[i][j] & HERO) std::cout << " & ";
-            std::cout << "   ";
+            else std::cout << "   ";
         }
         std::cout << "|" << std::endl;
     }
@@ -124,25 +126,27 @@ void PrintMaze(int level)
 extern void MazeGenerator(int level, int& lobbyRow, int& lobbyCol)
 {
     if (level >= MAZE_LIMIT) level = MAZE_LIMIT;
-    struct Position monsterPosition = RandomPosition(level);
-    struct Position princessPosition = RandomPosition(level);
+    // struct Position monsterPosition = RandomPosition(level);
+    // struct Position princessPosition = RandomPosition(level);
+    std::vector<bool> visited(level * level, false);
     struct Position lobbyPosition = RandomPosition(level);
+
     /* check whether the princess and the monster are generated at the same grid */
-    while (princessPosition.row == monsterPosition.row and princessPosition.row == monsterPosition.row)
-    {
-        princessPosition = RandomPosition(level); // re-generate the princess's location
-    }
+    // while (princessPosition.row == monsterPosition.row and princessPosition.row == monsterPosition.row)
+    // {
+    //     princessPosition = RandomPosition(level); // re-generate the princess's location
+    // }
     /* check whether the lobby is generated at the same grid with princess or the monster */
-    while ((lobbyPosition.row == monsterPosition.row  and lobbyPosition.col == lobbyPosition.col) or \
-		(lobbyPosition.row == princessPosition.row and lobbyPosition.col == princessPosition.col))
-    {
-        lobbyPosition = RandomPosition(level); // re-generate the lobby's location
-    }
+    // while ((lobbyPosition.row == monsterPosition.row  and lobbyPosition.col == lobbyPosition.col) or \
+	// 	(lobbyPosition.row == princessPosition.row and lobbyPosition.col == princessPosition.col))
+    // {
+    //     lobbyPosition = RandomPosition(level); // re-generate the lobby's location
+    // }
     InitMaze(level); // initialization
     //Maze[monsterPosition.row][monsterPosition.col] |= MONSTER; // set the grid info
     //Maze[princessPosition.row][princessPosition.col] |= PRINCESS;
-    //Maze[lobbyPosition.row][lobbyPosition.col] |= LOBBY;
-    dfs(level, lobbyPosition); // depth-first search generate the maze
+    Maze[lobbyPosition.row][lobbyPosition.col] |= LOBBY;
+    dfs(level, lobbyPosition, visited); // depth-first search generate the maze
     lobbyRow = lobbyPosition.row;
     lobbyCol = lobbyPosition.col;
 }
