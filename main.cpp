@@ -29,6 +29,7 @@ void DrawBox(Shader& blockShader);
 void DrawLight(Shader&, Light&);
 void DrawSkybox(Shader&, SkyBox&);
 void DrawPlane(Shader&, Plane&);
+void DrawModel(Shader&, Model&);
 unsigned int LoadTexture(char const* path);
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -100,6 +101,9 @@ int main()
     SkyBox skybox;
     Plane plane;
 
+    Shader modelShader("../shaders/model.vs", "../shaders/model.fs");
+    Model model("../resources/stone/rock1.obj");
+
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -119,6 +123,7 @@ int main()
         //DrawBox(blockShader);
         DrawSkybox(skyboxShader, skybox);
         DrawPlane(planeShader, plane);
+        DrawModel(modelShader, model);
         // frame buffer swap
         glfwSwapBuffers(window);
 
@@ -300,4 +305,15 @@ void DrawPlane(Shader& planeShader, Plane& plane)
     planeShader.setMat4("view", view);
     planeShader.setMat4("projection", projection);
     plane.Draw(planeShader);
+}
+
+void DrawModel(Shader& shader, Model& sheepModel){
+    shader.use();
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    shader.setMat4("model", model);
+    shader.setMat4("view", view);
+    shader.setMat4("projection", projection);
+    sheepModel.Draw(shader);
 }

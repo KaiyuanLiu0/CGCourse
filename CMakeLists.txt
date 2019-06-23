@@ -32,5 +32,6 @@ target_link_libraries(Graphics "-framework GLUT")
 endif()
 if (WIN32)
 target_link_libraries(Graphics "glfw3dll")
+target_link_libraries(Graphics "assimp")
 endif()
  

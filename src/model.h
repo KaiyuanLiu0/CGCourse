@@ -242,6 +242,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
         stbi_image_free(data);
     }
 
+    printf("textureID: %d\n", textureID);
     return textureID;
 }
 #endif //GRAPHICS_MODEL_H
