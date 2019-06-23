@@ -26,6 +26,8 @@ public:
     void SetLevel(LEVEL level);
     TYPE GetType(int row, int col);
     int GetLimit();
+    int StartRow();
+    int StartCol();
 private:
 //    const TYPE map[NUMOFLEVEL][MAP_HEIGHT][MAP_WIDTH] = {
 //            {{PLAIN, PLAIN, WALL,    WALL,  WALL,  WALL,  WALL,  PLAIN}, // LEVEL 1 MAP
@@ -84,6 +86,7 @@ private:
     TYPE* map;
     int m_level_;
     int map_limit;
+    int row, col;
     void SetUpMap();
     const int LEVEL_SEP = 10;
 };

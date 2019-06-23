@@ -23,9 +23,8 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
+int processInput(GLFWwindow *window);
 void GenerateShadowMap(Shader& shadowShader);
-void GenerateDepthMap(Shader& shadowShder);
 void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
 void DrawBox(Shader& blockShader);
 void DrawLight(Shader& lightShader, Light& light);
@@ -43,8 +42,13 @@ const unsigned int SHADOW_HEIGHT = 1024;
 unsigned int depthMapFBO;
 unsigned int depthCubemap;
 
+float defaultY = 0.6f;
+// map
+LEVEL level = LEVEL1;
+Map gameMap(level); // default level
+
 // camera
-Camera camera(glm::vec3(3.0f, 3.0f, 3.0f));
+Camera camera(glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol()));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -56,10 +60,8 @@ float lastFrame = 0.0f;
 // lighting
 glm::vec3 lightPos(0.0f, 5.0f, 0.0f);
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-// map
-LEVEL level = LEVEL1;
-Map gameMap(level); // default level
 
+std::vector<wall> walls;
 
 int main()
 {
@@ -127,8 +129,14 @@ int main()
         lastFrame = currentFrame;
 
         // input
-        processInput(window);
-
+	if(processInput(window) == 1){
+        int tmp = static_cast<int>(level);
+        tmp++;
+        level = static_cast<LEVEL>(tmp);
+		gameMap.SetLevel(level);
+		std::cout << "Victory! Level " << tmp + 1 << std::endl;
+		camera.Position = glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol());
+	}
         // render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -194,30 +202,32 @@ int main()
 }
 
 // keyboard callback
-void processInput(GLFWwindow *window)
+int processInput(GLFWwindow *window)
 {
+	int rett = 0;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        rett = camera.ProcessKeyboard(FORWARD, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        rett = camera.ProcessKeyboard(BACKWARD, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        rett = camera.ProcessKeyboard(LEFT, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        rett = camera.ProcessKeyboard(RIGHT, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        camera.ProcessKeyboard(UP, deltaTime);
+        rett = camera.ProcessKeyboard(UP, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        camera.ProcessKeyboard(DOWN, deltaTime);
+        rett = camera.ProcessKeyboard(DOWN, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-        camera.ProcessKeyboard(ORBIT, deltaTime);
+        rett = camera.ProcessKeyboard(ORBIT, deltaTime, gameMap);
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS){
         char *s = (char *)malloc(sizeof(char) * 100);
-        sprintf(s, "%d.png", time(0));
+        sprintf(s, "screenshot_%ld.png", time(0));
         saveScreenshot(window, s);
     }
+    return rett;
 }
 
 // viewport size callback
@@ -274,10 +284,6 @@ void GenerateShadowMap(Shader& shaderShader)
 
 }
 
-void GenerateDepthMap(Shader& shadowShder)
-{
-
-}
 void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
 {
     glm::mat4 model      = glm::mat4(1.0f);
@@ -306,6 +312,7 @@ void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
             {
                 case WALL:
                     wall.Draw(blockShader);
+		    //walls.push_back({{i, 0, j}, 0.5});
                     break;
                 default:
                     break;
@@ -317,7 +324,7 @@ void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
 void DrawLight(Shader& lightShader, Light& light)
 {
     lightPos = camera.Position + camera.Front + camera.Front + camera.Front + camera.Right;
-    lightPos.y = 1.5f;
+    lightPos.y = 2.5f;
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));

@@ -4,6 +4,7 @@
 
 #include "map.h"
 #include "maze.h"
+#include <iostream>
 extern unsigned int Maze[MAZE_LIMIT][MAZE_LIMIT];
 Map::Map()
 {
@@ -32,17 +33,27 @@ TYPE Map::GetType(int row, int col)
     return map[row * (2 * (m_level_ + 1) * LEVEL_SEP + 1) + col];
 }
 
+
 int Map::GetLimit()
 {
     return map_limit;
 }
+
+int Map::StartRow()
+{
+    return row * 2 + 1;
+}
+
+int Map::StartCol()
+{
+    return col * 2 + 1;
+}
+
 void Map::SetUpMap()
 {
     int maze_limit = (m_level_ + 1) * LEVEL_SEP;
-    struct Position start;
-    start.row = 5;
-    start.col = 5;
-    MazeGenerator(maze_limit, start.row, start.col);
+    MazeGenerator(maze_limit, row, col);
+    // PrintMaze(maze_limit);
     map = new TYPE[(maze_limit * 2 + 1) * (maze_limit * 2 + 1)];
     int idx = 0;
     for (int i = 0; i < maze_limit; ++i)
@@ -63,6 +74,8 @@ void Map::SetUpMap()
         map[idx++] = WALL;
     }
     for (int i = 0; i < maze_limit * 2 + 1; ++i) map[idx++] = WALL;
+    PrintMaze(maze_limit);
+
     maze_limit = (maze_limit * 2 + 1);
     int center = maze_limit * maze_limit / 2;
     map[center - 2 * maze_limit - 2] = PLAIN;
@@ -90,6 +103,4 @@ void Map::SetUpMap()
     map[center + 2 * maze_limit] = PLAIN;
     map[center + 2 * maze_limit + 1] = PLAIN;
     map[center + 2 * maze_limit + 2] = PLAIN;
-
-
 }
