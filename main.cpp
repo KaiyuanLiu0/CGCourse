@@ -144,9 +144,9 @@ int main()
             wall_y -= 3 * deltaTime;
             if (cg_wall_clock > cg_wall_time){
                 isCG--;
-                int tmp = static_cast<int>(level);
-                tmp++;
-                level = static_cast<LEVEL>(tmp);
+                //int tmp = static_cast<int>(level);
+                //tmp++;
+                //level = static_cast<LEVEL>(tmp);
                 gameMap.SetLevel(level);
                 cg_clock = 0;
                 glm::vec3 target = glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol());

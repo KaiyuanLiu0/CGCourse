@@ -17,7 +17,12 @@ static struct Position RandomPosition(int level)
     int randomRow = uniform_dist(e1);
     int randomCol = uniform_dist(e1);
     struct Position retPos { randomRow, randomCol };
-    return retPos;
+    if ((retPos.row >= level / 2 - 1) and (retPos.col >= level / 2 - 1) and (retPos.row <= level / 2 + 1) and (retPos.col <= level / 2 + 1))
+    {
+        return RandomPosition(level);
+    }
+    else
+        return retPos;
 }
 
 /* shuffle the direction list, used in dfs */

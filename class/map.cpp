@@ -52,6 +52,7 @@ int Map::StartCol()
 void Map::SetUpMap()
 {
     int maze_limit = (m_level_ + 1) * LEVEL_SEP;
+    std::cout << maze_limit << std::endl;
     MazeGenerator(maze_limit, row, col);
     // PrintMaze(maze_limit);
     map = new TYPE[(maze_limit * 2 + 1) * (maze_limit * 2 + 1)];

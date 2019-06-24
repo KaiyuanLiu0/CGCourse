@@ -88,7 +88,7 @@ private:
     int map_limit;
     int row, col;
     void SetUpMap();
-    const int LEVEL_SEP = 10;
+    const int LEVEL_SEP = 5;
 };
 
 
