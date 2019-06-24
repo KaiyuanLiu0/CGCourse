@@ -13,9 +13,9 @@
 #include <vector>
 
 struct wall{
-	glm::vec3 center;
-	double size;
-}; 
+    glm::vec3 center;
+    double size;
+};
 
 // defines operations
 enum Camera_Movement {
@@ -50,16 +50,18 @@ public:
     float MouseSensitivity;
     float Zoom;
     double width;
-    
+    int mode; //0:zoom, 1:game
 
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+
+    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(1.0f, 0.0f, 1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
     {
         Position = position;
         WorldUp = up;
         Yaw = yaw;
         Pitch = pitch;
         updateCameraVectors();
-	width = 0.2;
+        width = 0.2;
+        mode = 1;
     }
     // Constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -82,60 +84,61 @@ public:
     int ProcessKeyboard(Camera_Movement operation, float deltaTime, Map map)
     {
         float velocity = MovementSpeed * deltaTime;
-	glm::vec3 front = Front;
-	front[1] = 0;
-	glm::vec3 right = Right;
-	right[1] = 0;
-	//glm::vec3 up = Up;
-	//up[1] = 0;
-	glm::vec3 tmp_ret;
-	glm::vec3 stan = {-1, -1, -1};
+        glm::vec3 front = Front;
+        front[1] = 0;
+        glm::vec3 right = Right;
+        right[1] = 0;
+        //glm::vec3 up = Up;
+        //up[1] = 0;
+        glm::vec3 tmp_ret;
+        glm::vec3 stan = {-1, -1, -1};
         if (operation == FORWARD){
-	    tmp_ret = col(Position, front * velocity, map);
-	    if(tmp_ret == stan){
-		return 1;
-	    }
+            tmp_ret = col(Position, front * velocity, map);
+            if(tmp_ret == stan){
+                return 1;
+            }
             Position += tmp_ret;
-	}
+        }
 
         if (operation == BACKWARD){
-	    tmp_ret = col(Position, -front * velocity, map);
-	    if(tmp_ret == stan){
-		return 1;
-	    }
+            tmp_ret = col(Position, -front * velocity, map);
+            if(tmp_ret == stan){
+                return 1;
+            }
             Position += tmp_ret;
-	}
+        }
 
         if (operation == LEFT){
-	    tmp_ret = col(Position, -right * velocity, map);
-	    if(tmp_ret == stan){
-		return 1;
-	    }
+            tmp_ret = col(Position, -right * velocity, map);
+            if(tmp_ret == stan){
+                return 1;
+            }
             Position += tmp_ret;
-	}
+        }
 
         if (operation == RIGHT){
-	    tmp_ret = col(Position, right * velocity, map);
-	    if(tmp_ret == stan){
-		return 1;
-	    }
+            tmp_ret = col(Position, right * velocity, map);
+            if(tmp_ret == stan){
+                return 1;
+            }
             Position += tmp_ret;
-	}
-
-        if (operation == UP){
-	    tmp_ret = col(Position, Up * velocity, map);
-	    if(tmp_ret == stan){
-		return 1;
-	    }
-            Position += tmp_ret;
-	}
-        if (operation == DOWN){
-	    tmp_ret = col(Position, -Up * velocity, map);
-	    if(tmp_ret == stan){
-		return 1;
-	    }
-            Position += tmp_ret;
-	}
+        }
+        if(mode == 0){
+            if (operation == UP){
+                tmp_ret = col(Position, Up * velocity, map);
+                if(tmp_ret == stan){
+                    return 1;
+                }
+                Position += tmp_ret;
+            }
+            if (operation == DOWN){
+                tmp_ret = col(Position, -Up * velocity, map);
+                if(tmp_ret == stan){
+                    return 1;
+                }
+                Position += tmp_ret;
+            }
+        }
         if (operation == ORBIT)
         {
             if (Position.x * Position.x + Position.z * Position.z > 0.1) // divide-by-zero error
@@ -147,7 +150,7 @@ public:
                 Position.z = -oldX * sin(angularVelocity) + oldZ * cos(angularVelocity);
             }
         }
-	return 0;
+        return 0;
     }
 
     // mouse operations, view direction
@@ -198,52 +201,56 @@ private:
     }
 
     int isin(glm::vec3 pos, glm::vec3 per, Map map){
-	//for(int i = 0; i < 3; i++){
-		int pos0_1 = int(pos[0] + per[0]+ 0.3);
-		int pos0_2 = int(pos[0] + per[0]+ 0.7);
-		//pos[1] = int(pos[1] + per[1]);
-		int pos2_1 = int(pos[2] + per[2] + 0.3);
-		int pos2_2 = int(pos[2] + per[2] + 0.7);
-		//std::cout << pos[0] << pos[1] << pos[2] << std::endl;
-		if(pos[1] + per[1] > 0.7){
-			return 1;
-		}
-		if(pos[1] + per[1] < 0){
-			return 0;
-		}
-		int tmp_0 = int(pos[0] + per[0]+ 0.5);
-		int tmp_1 = int(pos[2] + per[2]+ 0.5);
-		if(tmp_0 > map.GetLimit() / 2 - 3 && tmp_0 < map.GetLimit() / 2 + 3 && 
-		   tmp_1 > map.GetLimit() / 2 - 3 && tmp_1 < map.GetLimit() / 2 + 3){
-			return 2;
-		}
-		if(map.GetType(pos0_1, pos2_1) == WALL || 
-		   map.GetType(pos0_1, pos2_2) == WALL || 
-		   map.GetType(pos0_2, pos2_1) == WALL || 	
-		   map.GetType(pos0_2, pos2_2) == WALL
-		)
-			//std::cout << "WALL!" << std::endl;
-			return 0;
-		/*if(pos[i] + per[i] > input.center[i] + input.size + width || pos[i] + per[i] < input.center[i] - input.size - width){
-			return -1;
-		}*/
-	//}
-	return 1;
+        //for(int i = 0; i < 3; i++){
+        int pos0_1 = int(pos[0] + per[0]+ 0.3);
+        int pos0_2 = int(pos[0] + per[0]+ 0.7);
+        //pos[1] = int(pos[1] + per[1]);
+        int pos2_1 = int(pos[2] + per[2] + 0.3);
+        int pos2_2 = int(pos[2] + per[2] + 0.7);
+
+        //std::cout << pos[0] << pos[1] << pos[2] << std::endl;
+        if(pos[1] + per[1] > 0.7){
+            return 1;
+        }
+        if(pos[1] + per[1] < 0){
+            return 0;
+        }
+        int tmp_0 = int(pos[0] + per[0]+ 0.5);
+        int tmp_1 = int(pos[2] + per[2]+ 0.5);
+        if(tmp_0 > map.GetLimit() / 2 - 3 && tmp_0 < map.GetLimit() / 2 + 3 &&
+           tmp_1 > map.GetLimit() / 2 - 3 && tmp_1 < map.GetLimit() / 2 + 3){
+            return 2;
+        }
+        if(map.GetType(pos0_1, pos2_1) == WALL ||
+           map.GetType(pos0_1, pos2_2) == WALL ||
+           map.GetType(pos0_2, pos2_1) == WALL ||
+           map.GetType(pos0_2, pos2_2) == WALL
+                )
+            //std::cout << "WALL!" << std::endl;
+            return 0;
+        /*if(pos[i] + per[i] > input.center[i] + input.size + width || pos[i] + per[i] < input.center[i] - input.size - width){
+            return -1;
+        }*/
+        //}
+        return 1;
     }
 
     glm::vec3 col(glm::vec3 pos, glm::vec3 per, Map map){
         //std::cout << pos[0] << pos[1] << pos[2] << std::endl;
-	int abs_direct;
-	//for(int i = 0; i < walls->size(); i++){
-		int ret = isin(pos, per, map);
-		if(ret == 2){
-			return {-1, -1, -1};
-		}
-		if(isin(pos, per, map) == 0){
-			return {0, 0, 0};
-		}
-	//}
-	return per;
+        int abs_direct;
+        if(mode == 0){
+            return per;
+        }
+        //for(int i = 0; i < walls->size(); i++){
+        int ret = isin(pos, per, map);
+        if(ret == 2){
+            return {-1, -1, -1};
+        }
+        if(isin(pos, per, map) == 0){
+            return {0, 0, 0};
+        }
+        //}
+        return per;
     }
 };
 #endif //GRAPHICS_CAMERA_H
