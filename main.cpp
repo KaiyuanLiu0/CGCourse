@@ -27,7 +27,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 int processInput(GLFWwindow *window);
 void GenerateShadowMap(Shader& shadowShader);
 void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
-void DrawLight(Shader& lightShader, Light& light);
+void DrawLight(Shader& lightShader, Model& light);
 void DrawSkybox(Shader& skyboxShader, SkyBox& skybox);
 void DrawPlane(Shader& planeShader, Plane& plane);
 void DrawModel(Shader& modelShader, Model& trophy);
@@ -129,6 +129,7 @@ int main()
     Prism prism;
 
     Model trophy("../resources/objects/trophy/trophyobjectfile.obj");
+    Model modelLight("../resources/objects/moon/moon+lowpoly.obj");
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -220,7 +221,6 @@ int main()
         blockShader.setInt("depthMap", 1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
         DrawMap(blockShader, wall, base, end);
-        DrawLight(lightShader, light);
         DrawBuilding(blockShader, wall);
         DrawSkybox(skyboxShader, skybox);
         modelShader.use();
@@ -229,6 +229,8 @@ int main()
         planeShader.setInt("depthMap", 1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
         DrawModel(modelShader, trophy);
+        DrawLight(modelShader, modelLight);
+
 
         planeShader.use();
         planeShader.setFloat("far_plane", far_plane);
@@ -387,21 +389,26 @@ void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
     }
 }
 
-void DrawLight(Shader& lightShader, Light& light)
+void DrawLight(Shader& modelShader, Model& light)
 {
-    lightPos = camera.Position + camera.Front + camera.Front + camera.Front + camera.Right;
-    lightPos.y = 1.5f;
+    lightPos = camera.Position + glm::vec3(camera.Front.x * 1.5, 0.0, camera.Front.z * 1.5)+
+                glm::vec3(camera.Right.x * 0.5, 0.0, camera.Right.z * 0.5);
+    lightPos.y = 1.8f;
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    lightShader.use();
-    lightShader.setVec3("lightColor", lightColor);
-    lightShader.setMat4("model", model);
-    lightShader.setMat4("view", view);
-    lightShader.setMat4("projection", projection);
-    light.Draw(lightShader);
+    model = glm::scale(model, glm::vec3(0.005f, 0.005f, 0.005f));
+    glm::mat4 view       = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
+    modelShader.setMat4("model", model);
+    modelShader.setMat4("view", view);
+    modelShader.setMat4("projection", projection);
+    modelShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
+    modelShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    modelShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    modelShader.setVec3("light.position", glm::vec3(0.0f, 0.0f, 0.0f));
+    modelShader.setVec3("viewPos", camera.Position);
+    modelShader.setFloat("shininess", 32.0f);
+    light.Draw(modelShader);
 
 }
 
@@ -431,7 +438,7 @@ void DrawPlane(Shader& planeShader, Plane& plane)
     planeShader.setMat4("model", model);
     planeShader.setMat4("view", view);
     planeShader.setMat4("projection", projection);
-    planeShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    planeShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
     planeShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
     planeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
     planeShader.setVec3("light.position", lightPos);
