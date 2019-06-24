@@ -63,6 +63,14 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 std::vector<wall> walls;
 
+int isCG = 0;
+const float cg_time = 3;
+float cg_clock = 0;
+glm::vec3 cg_delta;
+const float cg_wall_time = 1;
+float cg_wall_clock = 0;
+float wall_y = 0;
+
 int main()
 {
     glfwInit();
@@ -129,14 +137,48 @@ int main()
         lastFrame = currentFrame;
 
         // input
-	if(processInput(window) == 1){
-        int tmp = static_cast<int>(level);
-        tmp++;
-        level = static_cast<LEVEL>(tmp);
-		gameMap.SetLevel(level);
-		std::cout << "Victory! Level " << tmp + 1 << std::endl;
-		camera.Position = glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol());
-	}
+        if (isCG == 3){
+            cg_wall_clock += deltaTime;
+            wall_y -= 3 * deltaTime;
+            if (cg_wall_clock > cg_wall_time){
+                isCG--;
+                int tmp = static_cast<int>(level);
+                tmp++;
+                level = static_cast<LEVEL>(tmp);
+                gameMap.SetLevel(level);
+                cg_clock = 0;
+                glm::vec3 target = glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol());
+                cg_delta = (target - camera.Position) / cg_time;
+            }
+        }
+        else if (isCG == 2){
+            glm::vec3 old_position = camera.Position;
+            glm::vec3 now_position = old_position + cg_delta * deltaTime;
+            camera.Position = now_position;
+            cg_clock += deltaTime;
+            if (cg_clock > cg_time){
+                isCG--;
+                cg_wall_clock = 0;
+                camera.Position = glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol());
+            }
+        }
+        else if (isCG == 1){
+            cg_wall_clock += deltaTime;
+            wall_y += 3 * deltaTime;
+            if (cg_wall_clock > cg_wall_time || wall_y > 0){
+                isCG--;
+                wall_y = 0;
+            }
+        }
+        else if(processInput(window) == 1){
+            int tmp = static_cast<int>(level);
+            tmp++;
+            level = static_cast<LEVEL>(tmp);
+            std::cout << "Victory! Level " << tmp + 1 << std::endl;
+            isCG = 3;
+            cg_wall_clock = 0;
+            // camera.Position = glm::vec3(gameMap.StartRow(), defaultY, gameMap.StartCol());
+        }
         // render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -304,7 +346,7 @@ void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
         for (int j = 0; j != map_limit; ++j)
         {
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(i, 0, j));
+            model = glm::translate(model, glm::vec3(i, wall_y, j));
             blockShader.setMat4("model", model);
 //            blockShader.setVec3("objPos", glm::vec3(i, 0, j));
             TYPE type = gameMap.GetType(i, j);
@@ -436,6 +478,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     blockShader.setFloat("shininess", 32.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 1, -0.25, middle - 1));
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
     blockShader.setMat4("model", model);
@@ -451,6 +494,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 1, -0.25, middle + 1));
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
     blockShader.setMat4("model", model);
@@ -466,6 +510,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle + 1, -0.25, middle - 1));
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
     blockShader.setMat4("model", model);
@@ -481,6 +526,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle + 1, -0.25, middle + 1));
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
     blockShader.setMat4("model", model);
@@ -496,6 +542,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 1, 1.75f, middle - 1));
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
     blockShader.setMat4("model", model);
@@ -575,6 +622,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
 
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 0.625, 1.0f, middle - 1.125));
     model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
     blockShader.setMat4("model", model);
@@ -614,6 +662,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 0.625, 1.0f, middle + 0.875));
     model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
     blockShader.setMat4("model", model);
@@ -653,6 +702,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle + 0.875, 1.0f, middle - 0.625));
     model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
     blockShader.setMat4("model", model);
@@ -692,6 +742,7 @@ void DrawBuilding(Shader& blockShader, Block& wall)
     wall.Draw(blockShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 1.125, 1.0f, middle - 0.625));
     model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
     blockShader.setMat4("model", model);

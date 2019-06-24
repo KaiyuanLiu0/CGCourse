@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <algorithm>
 #include "maze.h"
 unsigned int Maze[MAZE_LIMIT][MAZE_LIMIT];
 
@@ -24,7 +25,7 @@ static void ShuffleList(std::vector<int> &iVec)
 {
     std::random_device rd;
     std::mt19937 g(rd());
-    shuffle(iVec.begin(), iVec.end(), g);
+    std::shuffle(iVec.begin(), iVec.end(), g);
 }
 
 /* start from the lobby, by backtracking and dfs to generate the maze */
