@@ -28,8 +28,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 int processInput(GLFWwindow *window);
 void GenerateShadowMap(Shader& shadowShader);
-void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end);
-void DrawLight(Shader& lightShader, Model& light);
+void DrawMap(Shader& blockShader, Block& wall);
+void DrawLight(Shader& modelShader, Model& light);
 void DrawSkybox(Shader& skyboxShader, SkyBox& skybox);
 void DrawPlane(Shader& planeShader, Plane& plane);
 void DrawModel(Shader& modelShader, Model& trophy);
@@ -114,7 +114,6 @@ int main()
 
 
     Shader blockShader("../shaders/block_shader.vs", "../shaders/block_shader.fs");
-    Shader lightShader("../shaders/light_shader.vs", "../shaders/light_shader.fs");
     Shader skyboxShader("../shaders/skybox.vs", "../shaders/skybox.fs");
     Shader planeShader("../shaders/plane.vs", "../shaders/plane.fs");
     Shader modelShader("../shaders/model.vs", "../shaders/model.fs");
@@ -123,8 +122,6 @@ int main()
     GenerateShadowMap(shadowShader);
 
     Block wall(WALL);
-    Block base(BASE);
-    Block end(END);
     Light light;
     SkyBox skybox;
     Plane plane;
@@ -207,7 +204,7 @@ int main()
             shadowShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
         shadowShader.setFloat("far_plane", far_plane);
         shadowShader.setVec3("lightPos", lightPos);
-        DrawMap(shadowShader, wall, base, end);
+        DrawMap(shadowShader, wall);
         DrawPlane(shadowShader, plane);
         DrawPrism(shadowShader, prism);
         DrawBuilding(shadowShader, wall);
@@ -222,7 +219,7 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         blockShader.setInt("depthMap", 1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-        DrawMap(blockShader, wall, base, end);
+        DrawMap(blockShader, wall);
         DrawBuilding(blockShader, wall);
         DrawSkybox(skyboxShader, skybox);
         modelShader.use();
@@ -357,7 +354,7 @@ void GenerateShadowMap(Shader& shaderShader)
 
 }
 
-void DrawMap(Shader& blockShader, Block& wall, Block& base, Block& end)
+void DrawMap(Shader& blockShader, Block& wall)
 {
     glm::mat4 model      = glm::mat4(1.0f);
     glm::mat4 view       = camera.GetViewMatrix();
