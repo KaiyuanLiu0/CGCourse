@@ -19,9 +19,3 @@ mkdir build
 cmake ../.
 make
 ```
-
-### TODO:
-
-* 实现nurbs曲面
-* 基本三维网格导入导出功能
-* 增加CG

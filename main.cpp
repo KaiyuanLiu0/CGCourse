@@ -8,6 +8,8 @@
 #include "src/camera.h"
 #include "src/model.h"
 #include "src/screenshot.h"
+#include "src/obj_load.h"
+#include "src/obj_out.h"
 #include "class/type.h"
 #include "class/block.h"
 #include "class/light.h"
@@ -280,6 +282,9 @@ int processInput(GLFWwindow *window)
         char *s = (char *)malloc(sizeof(char) * 100);
         sprintf(s, "screenshot_%ld.png", time(0));
         saveScreenshot(window, s);
+    }
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+        saveOBJ("objOut.obj");
     }
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
         if (camera.mode == 1 && !cnt) {

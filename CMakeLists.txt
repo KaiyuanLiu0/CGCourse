@@ -24,7 +24,7 @@ if (WIN32)
 LINK_DIRECTORIES("./lib")
 endif()
 
-set(SOURCE_FILES "main.cpp" "glad/src/glad.c" ${DIR_SRCS} class/block.h class/block.cpp class/map.cpp class/map.h class/type.h class/skybox.cpp class/skybox.h class/box.cpp class/box.h class/light.cpp class/light.h class/plane.cpp class/plane.h class/maze.cpp class/maze.h class/triangular_prism.cpp class/triangular_prism.h)
+set(SOURCE_FILES "main.cpp" "glad/src/glad.c" ${DIR_SRCS} class/block.h class/block.cpp class/map.cpp class/map.h class/type.h class/skybox.cpp class/skybox.h class/box.cpp class/box.h class/light.cpp class/light.h class/plane.cpp class/plane.h class/maze.cpp class/maze.h class/triangular_prism.cpp class/triangular_prism.h src/obj_load.h src/obj_out.h)
 add_executable(Graphics ${SOURCE_FILES})
 if (APPLE)
 target_link_libraries(Graphics "-framework OpenGL")
