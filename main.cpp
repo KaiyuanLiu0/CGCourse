@@ -452,6 +452,7 @@ void DrawPrism(Shader& planeShader, Prism& prism)
     int middle = gameMap.GetLimit() / 2;
     planeShader.use();
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     planeShader.setMat4("view", view);
@@ -464,24 +465,28 @@ void DrawPrism(Shader& planeShader, Prism& prism)
     planeShader.setFloat("shininess", 32.0f);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle, -0.25, middle + 0.58));
     model = glm::scale(model, glm::vec3(0.2f, 0.5f, 0.2f));
     planeShader.setMat4("model", model);
     prism.Draw(planeShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle - 0.5, -0.25, middle - 0.25));
     model = glm::scale(model, glm::vec3(0.2f, 0.5f, 0.2f));
     planeShader.setMat4("model", model);
     prism.Draw(planeShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle + 0.5, -0.25, middle - 0.25));
     model = glm::scale(model, glm::vec3(0.2f, 0.5f, 0.2f));
     planeShader.setMat4("model", model);
     prism.Draw(planeShader);
 
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(middle, 0.0f, middle + 0.25));
     model = glm::scale(model, glm::vec3(1.5f, 0.1f, 1.5f));
     planeShader.setMat4("model", model);
@@ -498,6 +503,7 @@ void DrawModel(Shader& modelShader, Model& trophy)
     // trophyPos.y = 50.0f;
     // trophyPos.z = radius * sin(glfwGetTime() / 10);
     // model = glm::translate(model, trophyPos);
+    model = glm::translate(model, glm::vec3(0, wall_y, 0));
     model = glm::translate(model, glm::vec3(gameMap.GetLimit() / 2, 0.0f, gameMap.GetLimit() / 2));
     model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
     glm::mat4 view       = camera.GetViewMatrix();
