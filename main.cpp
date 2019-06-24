@@ -35,8 +35,8 @@ void DrawBuilding(Shader& blockShader, Block& wall);
 void DrawPrism(Shader& planeShader, Prism& prism);
 unsigned int LoadTexture(char const* path);
 // settings
-const unsigned int SCR_WIDTH = 1920;
-const unsigned int SCR_HEIGHT = 1080;
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 const unsigned int SHADOW_WIDTH = 1024;
 const unsigned int SHADOW_HEIGHT = 1024;
 
@@ -223,6 +223,11 @@ int main()
         DrawLight(lightShader, light);
         DrawBuilding(blockShader, wall);
         DrawSkybox(skyboxShader, skybox);
+        modelShader.use();
+        modelShader.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE1);
+        planeShader.setInt("depthMap", 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
         DrawModel(modelShader, trophy);
 
         planeShader.use();
