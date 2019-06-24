@@ -22,7 +22,7 @@ public:
     Plane();
     void Draw(Shader& shader);
 private:
-    const char* path = "../resources/block/wood.png";
+    const char* path = "../resources/block/marble.jpg";
     unsigned int VAO;
     unsigned int Texture;
     unsigned int LoadTexture(char const* path);
