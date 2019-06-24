@@ -6,9 +6,8 @@ This is the final project for CGCourse 2019 in ZJU
 ## Dependencies:
 
 - glfw
-- glad 
 - glew
-- stb_image
+- glad
 - assimp
 - cmake
 

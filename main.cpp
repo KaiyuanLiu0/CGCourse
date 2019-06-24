@@ -215,7 +215,7 @@ int main()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // render scene
-        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glViewport(0, 0, 2 * SCR_WIDTH, 2 * SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         blockShader.use();
         blockShader.setFloat("far_plane", far_plane);
@@ -398,7 +398,7 @@ void DrawLight(Shader& modelShader, Model& light)
 {
     lightPos = camera.Position + glm::vec3(camera.Front.x * 1.5, 0.0, camera.Front.z * 1.5)+
                 glm::vec3(camera.Right.x * 0.5, 0.0, camera.Right.z * 0.5);
-    lightPos.y = 1.8f;
+    lightPos.y = 2.3f;
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
     model = glm::scale(model, glm::vec3(0.005f, 0.005f, 0.005f));
